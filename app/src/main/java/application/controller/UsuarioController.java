@@ -15,59 +15,53 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import application.model.Usuario;
+import application.repository.LoginRepository;
 import application.repository.UsuarioRepository;
 
 @RestController
 @RequestMapping("/usuarios")
-public class UsuariosController {
+public class UsuarioController {
     @Autowired
     private UsuarioRepository usuarioRepo;
 
+    @Autowired
+    private LoginRepository loginRepo;
+
     @GetMapping
-    public Iterable<Usuario>getAll(){
+    public Iterable<Usuario> getAll(){
         return usuarioRepo.findAll();
     }
 
-    @GetMapping("/{id}")
-    public Usuario getOne(@PathVariable long id) {
-        Optional<Usuario> result = usuarioRepo.findById(id);
-        if(result.isEmpty()) {
-            throw new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Usuario Não Encontrado"
-            );
-        }
-        return result.get();
-    }
-
     @PostMapping
-     private Usuario post(@RequestBody Usuario usuario) {
+    public Usuario post(@RequestBody Usuario usuario){
+        if(!loginRepo.existsById((long) usuario.getLogin().getId())){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Login não encontrado");
+        }
         return usuarioRepo.save(usuario);
     }
 
     @PutMapping("/{id}")
-    private Usuario put(@RequestBody Usuario usuario, @PathVariable long id) {
+    public Usuario put(@RequestBody Usuario usuario, @PathVariable long id){
         Optional<Usuario> result = usuarioRepo.findById(id);
-
-        if(result.isEmpty()) {
-            throw new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Usuario Não Encontrado"
-            );
+        if(result.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario não encontrado");
         }
-
+        if(!loginRepo.existsById((long) usuario.getLogin().getId())){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Login não encontrado");
+        }
         result.get().setNome(usuario.getNome());
-        result.get().setNome_exibicao(usuario.getNome_exibicao());
+        result.get().setNomeExibicao(usuario.getNomeExibicao());
+        result.get().setLogin(usuario.getLogin());
+
         return usuarioRepo.save(result.get());
     }
 
     @DeleteMapping("/{id}")
-    private void delete(@PathVariable long id) {
-        if(usuarioRepo.existsById(id)) {
+    public void delete(@PathVariable long id){
+        if(usuarioRepo.existsById(id)){
             usuarioRepo.deleteById(id);
         } else {
-            throw new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Usuario Não Encontrado"
-            );
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado");
         }
     }
-    
 }

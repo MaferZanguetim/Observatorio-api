@@ -22,36 +22,32 @@ import application.repository.LoginRepository;
 public class LoginController {
     @Autowired
     private LoginRepository loginRepo;
-
-    @GetMapping
-    public Iterable<Login>getAll(){
-        return loginRepo.findAll();
-    }
-
+    
     @GetMapping("/{id}")
-    public Login getOne(@PathVariable long id) {
+    public Login getOne(@PathVariable long id){
         Optional<Login> result = loginRepo.findById(id);
-        if(result.isEmpty()) {
-            throw new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Login Não Encontrado"
-            );
+        if(result.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Login não encontrado");
         }
         return result.get();
     }
-
+    
     @PostMapping
-     private Login post(@RequestBody Login login) {
+    private Login post(@RequestBody Login login){
         return loginRepo.save(login);
     }
-
+    
+    @GetMapping
+    public Iterable<Login> getAll(){
+        return loginRepo.findAll();
+    }
+    
     @PutMapping("/{id}")
-    private Login put(@RequestBody Login login, @PathVariable long id) {
+    private Login put(@RequestBody Login login, @PathVariable long id){
         Optional<Login> result = loginRepo.findById(id);
 
-        if(result.isEmpty()) {
-            throw new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Login Não Encontrado"
-            );
+        if(result.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Login não encontrado");
         }
 
         result.get().setEmail(login.getEmail());
@@ -60,13 +56,11 @@ public class LoginController {
     }
 
     @DeleteMapping("/{id}")
-    private void delete(@PathVariable long id) {
-        if(loginRepo.existsById(id)) {
+    private void delete(@PathVariable long id){
+        if(loginRepo.existsById(id)){
             loginRepo.deleteById(id);
         } else {
-            throw new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Login Não Encontrado"
-            );
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Login não encontrado");
         }
     }
 }

@@ -5,44 +5,56 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="usuario")
+@Table(name = "usuarios")
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
+    private Long id;
     @Column(nullable = false)
-    private long nome;
-
+    private String nome;
     @Column(nullable = false)
-    private long nome_exibicao;
+    private String nomeExibicao;
+    
+    @OneToOne
+    @JoinColumn(name = "id_login", nullable = false)
+    private Login login;
 
-    public long getId() {
+    
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public long getNome() {
+    public String getNome() {
         return nome;
     }
 
-    public void setNome(long nome) {
+    public void setNome(String nome) {
         this.nome = nome;
     }
 
-    public long getNome_exibicao() {
-        return nome_exibicao;
+    public String getNomeExibicao() {
+        return nomeExibicao;
     }
 
-    public void setNome_exibicao(long nome_exibicao) {
-        this.nome_exibicao = nome_exibicao;
+    public void setNomeExibicao(String nomeExibicao) {
+        this.nomeExibicao = nomeExibicao;
     }
 
-    
+    public Login getLogin() {
+        return login;
+    }
+
+    public void setLogin(Login login) {
+        this.login = login;
+    }
+
 }
